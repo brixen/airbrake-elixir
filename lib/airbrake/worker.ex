@@ -18,10 +18,13 @@ defmodule Airbrake.Worker do
   @doc """
   Send a report to Airbrake.
   """
-  @spec report(Exception.t | [type: String.t, message: String.t], Keyword.t) :: :ok
+  @spec report(Exception.t | {atom(), tuple()} | [type: String.t, message: String.t], Keyword.t) :: :ok
   def report(exception, options \\ [])
   def report(%{__exception__: true} = exception, options) when is_list(options) do
     report(exception_info(exception), options)
+  end
+  def report({type, what} = _, options) do
+    report([type: type, message: what], options)
   end
   def report([type: _, message: _] = exception, options) when is_list(options) do
     stacktrace = options[:stacktrace] || System.stacktrace
@@ -32,7 +35,7 @@ defmodule Airbrake.Worker do
   end
 
 
-  @spec report(Exception.t | [type: String.t, message: String.t], Keyword.t) :: :ok
+  @spec remember(Exception.t | [type: String.t, message: String.t], Keyword.t) :: :ok
   def remember(exception, options \\ [])
   def remember(%{__exception__: true} = exception, options) when is_list(options) do
     remember(exception_info(exception), options)
