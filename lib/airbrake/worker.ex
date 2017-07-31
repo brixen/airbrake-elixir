@@ -24,7 +24,7 @@ defmodule Airbrake.Worker do
     report(exception_info(exception), options)
   end
   def report({type, what} = _, options) do
-    report([type: type, message: what], options)
+    report([type: type, message: inspect(what)], options)
   end
   def report([type: _, message: _] = exception, options) when is_list(options) do
     stacktrace = options[:stacktrace] || System.stacktrace
